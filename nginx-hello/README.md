@@ -21,3 +21,14 @@ Request ID: 48ba0db334a6ed165e783469c2af868f
 ```
 
 The images were created to be used as simple backends for various load balancing demos.
+
+## Certificates
+
+Adapted from [this post](https://www.markbrilman.nl/2011/08/howto-convert-a-pfx-to-a-seperate-key-crt-file/).
+
+1. In PowerShell create server certificate: `New-SelfSignedCertificate -DnsName "argus.15x10.com" -CertStoreLocation "cert:\CurrentUser\My"`
+2. Open MMC.exe. Add the certificates snap-in for the current user. Navigate to Personal\Certificates. Export the generated certificate with private key to server.pfx with password.
+3. Open Command Prompt. Change directory to the folder with server.pfx. Start and OpenSSL session.
+4. Extract the encrypted private key: `pkcs12 -in server.pfx -nocerts -out server-encrypted.key`
+5. Extract the certificate: `pkcs12 -in server.pfx -clcerts -nokeys -out server.crt`
+6. Extract the decrypted key: `rsa -in server-encrypted.key -out server-decrypted.key`
