@@ -35,6 +35,8 @@ Adapted from [this post](https://www.markbrilman.nl/2011/08/howto-convert-a-pfx-
 
 ## Certificate Authority
 
+Adapted from [this post](https://fardog.io/blog/2017/12/30/client-side-certificate-authentication-with-nginx/).
+
 1. Start an OpenSSL session.
 2. Generate the CA key: `genrsa -des3 -out ca.key 4096`
 3. Create a CA certificate: `req -new -x509 -days 365 -key ca.key -out ca.crt -config openssl-ca.conf`
@@ -44,7 +46,10 @@ Adapted from [this post](https://www.markbrilman.nl/2011/08/howto-convert-a-pfx-
     3. Sign the CSR: `x509 -req -days 365 -in user.csr -CA ca.crt -CAkey ca.key -set_serial 01 -out user.crt`
     4. Create a PKCS #12 package with certificate and private key: `pkcs12 -export -out user.pfx -inkey user.key -in user.crt -certfile ca.crt`
 
-## Docker
+## Run the Sample
 
-Build: `docker build -t hello .`
-Run: `docker run -d -it -p 443:443 hello`
+1. Build the Docker image: `docker build -t hello .`
+2. Run the Docker image locally: `docker run -d -it -p 443:443 hello`
+3. Access [the test site](https://localhost/). You should receive a 400 Bad Request "No required SSL certificate was sent" error.
+4. Import the client certificate into the user.pfx file in the Current User/Personal certificate store by double-clicking in Windows or through Chrome's Settings/Manage certificates capability.
+5. Access [the test site](https://localhost/). You should be prompted to provide a certificate. Choose the certificate. Access should be granted to the NGINX sample page.
