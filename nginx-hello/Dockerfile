@@ -5,3 +5,4 @@ ADD index.html /usr/share/nginx/html/
 
 ADD server.crt /etc/nginx/conf.d/
 ADD server-decrypted.key /etc/nginx/conf.d/
+ADD ca.crt /etc/nginx/conf.d/

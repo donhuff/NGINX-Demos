@@ -22,7 +22,7 @@ Request ID: 48ba0db334a6ed165e783469c2af868f
 
 The images were created to be used as simple backends for various load balancing demos.
 
-## Certificates
+## TLS Certificate
 
 Adapted from [this post](https://www.markbrilman.nl/2011/08/howto-convert-a-pfx-to-a-seperate-key-crt-file/).
 
@@ -32,3 +32,19 @@ Adapted from [this post](https://www.markbrilman.nl/2011/08/howto-convert-a-pfx-
 4. Extract the encrypted private key: `pkcs12 -in server.pfx -nocerts -out server-encrypted.key`
 5. Extract the certificate: `pkcs12 -in server.pfx -clcerts -nokeys -out server.crt`
 6. Extract the decrypted key: `rsa -in server-encrypted.key -out server-decrypted.key`
+
+## Certificate Authority
+
+1. Start an OpenSSL session.
+2. Generate the CA key: `genrsa -des3 -out ca.key 4096`
+3. Create a CA certificate: `req -new -x509 -days 365 -key ca.key -out ca.crt -config openssl-ca.conf`
+4. Create a client certificate
+    1. Create an RSA key: `genrsa -des3 -out user.key 4096`
+    2. Create a Certificate Signing Request (CSR): `req -new -key user.key -out user.csr -config openssl-user.conf`
+    3. Sign the CSR: `x509 -req -days 365 -in user.csr -CA ca.crt -CAkey ca.key -set_serial 01 -out user.crt`
+    4. Create a PKCS #12 package with certificate and private key: `pkcs12 -export -out user.pfx -inkey user.key -in user.crt -certfile ca.crt`
+
+## Docker
+
+Build: `docker build -t hello .`
+Run: `docker run -d -it -p 443:443 hello`
